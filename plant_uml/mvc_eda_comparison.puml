@@ -16,12 +16,12 @@ package "MVC Pattern" {
   [HeaterModel] as mvc_model
   [ConsoleView] as mvc_view
   [HeaterController] as mvc_controller
-  
+
   mvc_controller -down-> mvc_sensor : reads
   mvc_controller -down-> mvc_model : updates
-  mvc_controller -down-> mvc_view : calls
-  mvc_view .down.> mvc_model : reads
-  
+  mvc_model -down-> mvc_view : notifies (Observer)
+  mvc_view ..> mvc_model : observes
+
 }
 
 @enduml

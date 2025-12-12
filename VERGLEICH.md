@@ -11,7 +11,7 @@
 - **Mediator:** `EventMediator` - Empfängt Events, enthält Geschäftslogik
 - **Event Consumer:** `Heater` - Reagiert auf `HeaterCommandEvent`
 
-![Architecture_Comparison.png](out/mvc_eda_comparison/Architecture_Comparison.png)
+![Architecture_Comparison.png](plant_uml/out/mvc_eda_comparison/Architecture_Comparison.png)
 ---
 
 ## 1. Coupling (Kopplung)
