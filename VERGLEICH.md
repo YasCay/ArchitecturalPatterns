@@ -1,6 +1,5 @@
-# Vergleich: MVC vs. Event-Driven Architecture
+# MVC vs. Event-Driven Architecture
 
-## Implementierungen
 
 ### MVC Pattern ([mvc_heater.py](mvc_heater.py))
 - **Model:** `HeaterModel` - Hält nur Daten (`current_temp`, `is_heater_on`)
@@ -12,6 +11,7 @@
 - **Mediator:** `EventMediator` - Empfängt Events, enthält Geschäftslogik
 - **Event Consumer:** `Heater` - Reagiert auf `HeaterCommandEvent`
 
+![Architecture_Comparison.png](plant_uml/out/mvc_eda_comparison/Architecture_Comparison.png)
 ---
 
 ## 1. Coupling (Kopplung)
@@ -110,8 +110,6 @@ def on_temperature_event(self, event):
 - Linearer Ablauf, leicht nachvollziehbar
 - Weniger Indirektionen
 - Klare Verantwortlichkeiten
-- **Code-Zeilen:** ~80 Zeilen
-- **Klassen:** 4 (Model, View, Controller, Sensor)
 
 **Vorteile:**
 - Direkter, imperativ
@@ -128,8 +126,6 @@ def on_temperature_event(self, event):
 - Event-Infrastruktur notwendig
 - Indirekte Kommunikation über Events
 - Mehr Klassen/Strukturen
-- **Code-Zeilen:** ~95 Zeilen
-- **Klassen:** 5 (Event, CommandEvent, Sensor, Mediator, Heater)
 
 **Vorteile:**
 - Komponenten unabhängig testbar
@@ -140,84 +136,3 @@ def on_temperature_event(self, event):
 - Indirektionen erschweren Debugging
 - Event-Flow nicht direkt sichtbar
 - Overkill für triviale Systeme
-
-**Gewinner:** Kommt auf den Kontext an:
-- **Klein/einfach:** MVC
-- **Groß/erweiterbar:** EDA
-
----
-
-## 4. Testbarkeit
-
-### MVC:
-```python
-# Tests benötigen alle Abhängigkeiten:
-def test_controller():
-    model = HeaterModel()
-    view = MockView()
-    sensor = MockSensor()
-    controller = HeaterController(model, view, sensor)
-    controller.run()
-```
-
-### EDA:
-```python
-# Komponenten isoliert testbar:
-def test_sensor():
-    sensor = TemperatureSensor()
-    mock_listener = MockListener()
-    sensor.subscribe(mock_listener)
-    sensor.measure_and_publish()
-    # Sensor kennt keine anderen Komponenten
-
-def test_heater():
-    heater = Heater()
-    heater.on_heater_command(HeaterCommandEvent(True))
-    assert heater.is_on == True
-```
-
-**Gewinner:** Event-Driven Architecture (bessere Isolierbarkeit)
-
----
-
-## Zusammenfassung
-
-| Kriterium | MVC | EDA |
-|-----------|-----|-----|
-| **Kopplung** | ✗ Hoch (Controller kennt alles) | ✓ Niedrig (Entkopplung) |
-| **Erweiterbarkeit** | ✗ Zentrale Änderungen nötig | ✓ Open/Closed Principle |
-| **Komplexität** | ✓ Einfach für kleine Apps | ✗ Overhead bei trivialen Fällen |
-| **Testbarkeit** | ✗ Abhängigkeiten schwer zu mocken | ✓ Isolierte Unit-Tests |
-| **Debugging** | ✓ Direkter Aufruf-Stack | ✗ Indirekte Event-Kette |
-| **Skalierbarkeit** | ✗ Controller wächst mit Features | ✓ Neue Consumer ohne Änderungen |
-
----
-
-## Empfehlung
-
-**Verwende MVC wenn:**
-- Kleine, überschaubare Anwendung
-- Linearer Ablauf
-- Wenige Komponenten
-- Einfachheit wichtiger als Flexibilität
-
-**Verwende EDA wenn:**
-- Viele unabhängige Komponenten
-- Häufige Erweiterungen erwartet
-- Lose Kopplung gefordert
-- Asynchrone/reaktive Systeme
-- Microservices oder verteilte Systeme
-
----
-
-## Ausführen der Implementierungen
-
-```bash
-# MVC Pattern ausführen
-python mvc_heater.py
-
-# Event-Driven Architecture ausführen
-python eda_heater.py
-```
-
-Beide Implementierungen produzieren ähnliche Ausgaben, aber die interne Struktur unterscheidet sich fundamental.

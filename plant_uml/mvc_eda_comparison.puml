@@ -9,11 +9,6 @@ package "Event-Driven (EDA)" {
   eda_sensor -down-> eda_mediator : TemperatureEvent
   eda_mediator -down-> eda_heater : HeaterCommandEvent
   
-  note right of eda_sensor
-    **Decoupled**
-    Components don't know
-    each other directly
-  end note
 }
 
 package "MVC Pattern" {
@@ -21,22 +16,12 @@ package "MVC Pattern" {
   [HeaterModel] as mvc_model
   [ConsoleView] as mvc_view
   [HeaterController] as mvc_controller
-  
+
   mvc_controller -down-> mvc_sensor : reads
   mvc_controller -down-> mvc_model : updates
-  mvc_controller -down-> mvc_view : calls
-  mvc_view .down.> mvc_model : reads
-  
-  note right of mvc_controller
-    **Centralized**
-    Controller orchestrates
-    all components
-  end note
-}
+  mvc_model -down-> mvc_view : notifies (Observer)
+  mvc_view ..> mvc_model : observes
 
-note bottom
-  **EDA**: Loose coupling via events, reactive
-  **MVC**: Tight coupling via controller, imperative
-end note
+}
 
 @enduml
