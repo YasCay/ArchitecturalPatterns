@@ -113,9 +113,9 @@ class ArchitectureDiagram:
 
     def draw_node(self, x, y, text, tag, color):
         self.canvas.create_rectangle(x+3, y+3, x+80+3, y+40+3, fill="#000", outline="", tags=tag)
-        rect = self.canvas.create_rectangle(x, y, x+80, y+40, fill=color, outline="white", width=1, tags=(tag, "rect"))
+        rect = self.canvas.create_rectangle(x, y, x+80, y+40, fill=color, outline="white", width=1, tags=(tag, f"{tag}_rect"))
         self.canvas.create_text(x+40, y+20, text=text, fill="white", font=("Arial", 9, "bold"), tags=tag)
-        self.elements[tag] = (x, y, color)
+        self.elements[tag] = (x, y, color, rect)
 
     def draw_link(self, x1, y1, x2, y2, tag, dashed=False):
         d = (2, 2) if dashed else None
@@ -142,13 +142,17 @@ class ArchitectureDiagram:
         if is_arrow:
             self.canvas.itemconfig(tag, fill=color, width=4)
         else:
-            self.canvas.itemconfig(self.canvas.find_withtag(tag)[1], outline=color, width=4)
+            items = self.canvas.find_withtag(f"{tag}_rect")
+            if items:
+                self.canvas.itemconfig(items[0], outline=color, width=4)
 
     def light_down(self, tag, is_arrow):
         if is_arrow:
             self.canvas.itemconfig(tag, fill="#718096", width=2)
         else:
-            self.canvas.itemconfig(self.canvas.find_withtag(tag)[1], outline="white", width=1)
+            items = self.canvas.find_withtag(f"{tag}_rect")
+            if items:
+                self.canvas.itemconfig(items[0], outline="white", width=1)
 
 # ============= LOGIK (MVC & EDA) =============
 
