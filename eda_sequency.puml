@@ -1,0 +1,61 @@
+@startuml EDA_Sequence_Diagram
+title Event-Driven Architecture - Sequence Diagram
+
+actor "Main" as main
+participant "TemperatureSensor" as sensor
+participant "EventMediator" as mediator
+participant "Heater" as heater
+
+main -> sensor: subscribe(mediator)
+activate sensor
+sensor -> sensor: listeners.append(mediator)
+deactivate sensor
+
+main -> mediator: register_heater(heater)
+activate mediator
+mediator -> mediator: self.heater = heater
+deactivate mediator
+
+loop 5 times (every second)
+  main -> sensor: measure_and_publish()
+  activate sensor
+  
+  sensor -> sensor: temperature = random(17.0, 23.0)
+  create TemperatureEvent
+  sensor -> TemperatureEvent: TemperatureEvent(temperature)
+  
+  note right of sensor
+    Event published to all listeners
+    Sensor doesn't know the mediator
+  end note
+  
+  sensor -> mediator: on_temperature_event(event)
+  activate mediator
+  
+  mediator -> mediator: check threshold (20.0°C)
+  
+  alt temperature < 20.0
+    create HeaterCommandEvent
+    mediator -> HeaterCommandEvent: HeaterCommandEvent(turn_on=True)
+    mediator -> heater: on_heater_command(command)
+    activate heater
+    heater -> heater: is_on = True
+    heater --> mediator: print "Heizung: AN"
+    deactivate heater
+  else temperature >= 20.0
+    create HeaterCommandEvent
+    mediator -> HeaterCommandEvent: HeaterCommandEvent(turn_on=False)
+    mediator -> heater: on_heater_command(command)
+    activate heater
+    heater -> heater: is_on = False
+    heater --> mediator: print "Heizung: AUS"
+    deactivate heater
+  end
+  
+  deactivate mediator
+  deactivate sensor
+  
+  main -> main: time.sleep(1)
+end
+
+@enduml

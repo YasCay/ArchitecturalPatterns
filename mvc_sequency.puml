@@ -1,0 +1,71 @@
+@startuml MVC_Sequence_Diagram
+title MVC Pattern - Sequence Diagram
+
+actor "Main" as main
+participant "HeaterController" as controller
+participant "TemperatureSensor" as sensor
+participant "HeaterModel" as model
+participant "ConsoleView" as view
+
+main -> controller: controller = HeaterController(model, view, sensor)
+activate controller
+controller -> controller: self.threshold = 20.0
+deactivate controller
+
+main -> controller: run(iterations=5)
+activate controller
+
+note right of controller
+  Controller orchestrates
+  the entire flow
+end note
+
+loop 5 times (every second)
+  controller -> sensor: read_temperature()
+  activate sensor
+  sensor -> sensor: random.uniform(17.0, 23.0)
+  sensor --> controller: temp
+  deactivate sensor
+  
+  controller -> model: update_temperature(temp)
+  activate model
+  model -> model: self.current_temp = temp
+  deactivate model
+  
+  note right of controller
+    Business logic:
+    Controller decides
+    based on threshold
+  end note
+  
+  alt temp < 20.0
+    controller -> model: set_heater_state(True)
+    activate model
+    model -> model: self.is_heater_on = True
+    deactivate model
+  else temp >= 20.0
+    controller -> model: set_heater_state(False)
+    activate model
+    model -> model: self.is_heater_on = False
+    deactivate model
+  end
+  
+  controller -> view: display(model)
+  activate view
+  view -> model: read current_temp
+  activate model
+  model --> view: current_temp
+  deactivate model
+  view -> model: read is_heater_on
+  activate model
+  model --> view: is_heater_on
+  deactivate model
+  view -> view: print to console
+  deactivate view
+  
+  controller -> controller: time.sleep(1)
+end
+
+deactivate controller
+
+@enduml
