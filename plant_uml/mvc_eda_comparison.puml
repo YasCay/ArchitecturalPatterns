@@ -5,7 +5,10 @@ package "Event-Driven (EDA)" {
   [TemperatureSensor] as eda_sensor
   [EventMediator] as eda_mediator
   [Heater] as eda_heater
-  
+  [ConsoleView] as eda_view
+
+  eda_view -down-> eda_mediator : UserInputEvent
+  eda_mediator -down-> eda_view : DisplayEvent
   eda_sensor -down-> eda_mediator : TemperatureEvent
   eda_mediator -down-> eda_heater : HeaterCommandEvent
   
@@ -20,6 +23,7 @@ package "MVC Pattern" {
   mvc_controller -down-> mvc_sensor : reads
   mvc_controller -down-> mvc_model : updates
   mvc_model -down-> mvc_view : notifies (Observer)
+  mvc_view -down-> mvc_controller : calls
   mvc_view ..> mvc_model : observes
 
 }
